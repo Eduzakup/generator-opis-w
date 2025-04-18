@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Generator opisów produktów Eduzakup.pl (API)</title>
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f0f4f8;
+}
+h1, h2 {
+    color: #003366;
+}
+label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    color: #003366;
+}
+input[type="text"], textarea {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+textarea {
+    height: 80px;
+}
+button {
+    padding: 10px 20px;
+    margin-top: 15px;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+}
+button:hover {
+    background-color: #005bb5;
+}
+.output-container {
+    margin-top: 20px;
+    background: white;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.status {
+    margin-top: 10px;
+    color: green;
+}
+</style>
+</head>
+<body>
+<h1>Generator opisów produktów</h1>
+<p>Wprowadź dane, kliknij "Generuj opis", a następnie skopiuj wynik do Sellingo.</p>
+
+<form id="productForm">
+<label for="productName">Nazwa produktu:</label>
+<input type="text" id="productName" required>
+
+<label for="productCategory">Kategoria:</label>
+<input type="text" id="productCategory" required>
+
+<label for="productDescription">Opis główny:</label>
+<textarea id="productDescription" required></textarea>
+
+<label for="productFeatures">Cechy produktu (oddziel przecinkami):</label>
+<input type="text" id="productFeatures" required>
+
+<label for="seoKeywords">Słowa kluczowe SEO (oddziel przecinkami):</label>
+<input type="text" id="seoKeywords" required>
+
+<label for="additionalContent">Dodatkowe informacje (opcjonalnie):</label>
+<textarea id="additionalContent"></textarea>
+
+<button type="submit">Generuj opis</button>
+</form>
+
+<div class="output-container">
+<h2>Wygenerowany opis</h2>
+<textarea id="generatedOutput" readonly style="height: 300px;"></textarea>
+<button onclick="copyToClipboard()">Kopiuj opis</button>
+<div class="status" id="status"></div>
+</div>
+
+<script>
+document.getElementById('productForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const payload = {
+        productName: document.getElementById('productName').value.trim(),
+        productCategory: document.getElementById('productCategory').value.trim(),
+        productDescription: document.getElementById('productDescription').value.trim(),
+        productFeatures: document.getElementById('productFeatures').value.trim(),
+        seoKeywords: document.getElementById('seoKeywords').value.trim(),
+        additionalContent: document.getElementById('additionalContent').value.trim(),
+    };
+
+    const outputField = document.getElementById('generatedOutput');
+    outputField.value = "Trwa generowanie opisu...";
+
+    try {
+        const response = await fetch("http://localhost:5000/generate-description", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (data.description) {
+            outputField.value = data.description;
+        } else {
+            throw new Error(data.error || "Błąd podczas generowania.");
+        }
+    } catch (err) {
+        outputField.value = "Błąd: " + err.message;
+    }
+});
+
+function copyToClipboard() {
+    const output = document.getElementById('generatedOutput');
+    output.select();
+    document.execCommand('copy');
+    document.getElementById('status').innerText = 'Skopiowano!';
+    setTimeout(() => {
+        document.getElementById('status').innerText = '';
+    }, 2000);
+}
+</script>
+</body>
+</html>
