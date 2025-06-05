@@ -2,11 +2,16 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Generator opisów produktów Eduzakup.pl (API)</title>
 <style>
+* {
+    box-sizing: border-box;
+}
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     max-width: 900px;
+    width: 100%;
     margin: 20px auto;
     padding: 20px;
     background-color: #f0f4f8;
@@ -54,6 +59,16 @@ button:hover {
 .status {
     margin-top: 10px;
     color: green;
+}
+
+@media (max-width: 600px) {
+    body {
+        margin: 10px auto;
+        padding: 10px;
+    }
+    button {
+        width: 100%;
+    }
 }
 </style>
 </head>
